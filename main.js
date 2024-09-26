@@ -3,7 +3,7 @@ import MarkdownIt from 'markdown-it';
 import { maybeShowApiKeyBanner } from './gemini-api-banner';
 import './style.css';
 
-let API_KEY = 'AIzaSyD0IwfMzo45iazdfQdqQt7SBC5d9mNzHqw'; // Keep it secure
+let API_KEY = 'Key-Here'; // Keep it secure
 
 let form = document.getElementById('chat-form');
 let promptInput = document.getElementById('promptInput');
