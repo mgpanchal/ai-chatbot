@@ -44,7 +44,7 @@ h1 {
 h1::before {
   content: '';
   display: inline-block;
-  background: url(gemini.svg);
+  /* background: url(gemini.svg); */
   width: 40px;
   height: 40px;
   background-size: cover;
