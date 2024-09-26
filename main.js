@@ -4,10 +4,6 @@ import MarkdownIt from 'markdown-it';
 import { maybeShowApiKeyBanner } from './gemini-api-banner';
 import './style.css';
 
-// 🔥🔥 FILL THIS OUT FIRST! 🔥🔥
-// Get your Gemini API key by:
-// - Selecting "Add Gemini API" in the "Project IDX" panel in the sidebar
-// - Or by visiting https://g.co/ai/idxGetGeminiKey
 let API_KEY = 'AIzaSyD0IwfMzo45iazdfQdqQt7SBC5d9mNzHqw';
 
 let form = document.querySelector('form');
@@ -20,12 +16,21 @@ form.onsubmit = async (ev) => {
 
   try {
     // Load the image as a base64 string
-    let imageUrl = form.elements.namedItem('chosen-image').value;
-    let imageBase64 = await fetch(imageUrl)
-      .then(r => r.arrayBuffer())
-      .then(a => Base64.fromByteArray(new Uint8Array(a)));
+    const fileInput = document.getElementById('fileInput');
+    const file = fileInput.files[0];
 
-    // Assemble the prompt by combining the text with the chosen image
+    const imageBase64 = await new Promise((resolve,reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+
+      reader.onload = () => {
+        const base64String = reader.result.split(',')[1];
+        resolve(base64String); 
+      };
+
+      reader.onerror = reject;
+    });
+
     let contents = [
       {
         role: 'user',
@@ -36,7 +41,7 @@ form.onsubmit = async (ev) => {
       }
     ];
 
-    // Call the multimodal model, and get a stream of results
+    // Call the pre trained model, and get a stream of results
     const genAI = new GoogleGenerativeAI(API_KEY);
     const model = genAI.getGenerativeModel({
       model: "gemini-1.5-flash", // or gemini-1.5-pro
@@ -50,7 +55,6 @@ form.onsubmit = async (ev) => {
 
     const result = await model.generateContentStream({ contents });
 
-    // Read from the stream and interpret the output as markdown
     let buffer = [];
     let md = new MarkdownIt();
     for await (let response of result.stream) {
@@ -62,5 +66,4 @@ form.onsubmit = async (ev) => {
   }
 };
 
-// You can delete this once you've filled out an API key
 maybeShowApiKeyBanner(API_KEY);
